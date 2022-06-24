@@ -12,8 +12,13 @@ class MvideoParser:
     cookies = cookies
     headers = headers
 
+    def __init__(self):
+        self.tv_info = {}
+        self.prices_info = {}
+
     def get_product_ids(self):
-        response_with_product_ids = requests.get(self.GET_PRODUCTS_IDS_URL, params=params, cookies=cookies, headers=headers)
+        response_with_product_ids = requests.get(self.GET_PRODUCTS_IDS_URL, params=params, cookies=cookies,
+                                                 headers=headers)
         products_ids = response_with_product_ids.json()['body']['products']
         return products_ids
 
@@ -31,11 +36,24 @@ class MvideoParser:
 
     def get_response_with_models_info(self):
         json_data = self.get_json_data_and_params_from_products_ids()[0]
-        response_with_models_info = response = requests.post(self.GET_MODELS_INFO_URL, cookies=cookies, headers=headers,
+        response_with_models_info = requests.post(self.GET_MODELS_INFO_URL, cookies=cookies, headers=headers,
                                                              json=json_data)
-        return response_with_models_info.text
+        tv_models_info = response_with_models_info.json()['body']['products']
+        for tv in tv_models_info:
+            if product_id := tv.get('productId'):
+                self.tv_info[product_id] = {}
+            if name := tv.get('name'):
+                self.tv_info[product_id]['name'] = name
+
+        return self.tv_info
 
     def get_response_with_prices_info(self):
         params = self.get_json_data_and_params_from_products_ids()[1]
         response_with_prices_info = requests.get(self.GET_PRICES_URL, cookies=cookies, headers=headers, params=params)
-        return response_with_prices_info.text
+        return response_with_prices_info.json()['body']['materialPrices']
+
+parser = MvideoParser()
+print(parser.get_product_ids())
+print(parser.get_json_data_and_params_from_products_ids())
+print(parser.get_response_with_models_info())
+print(parser.get_response_with_prices_info())
