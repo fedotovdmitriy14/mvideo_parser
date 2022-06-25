@@ -13,8 +13,7 @@ class MvideoParser:
     headers = headers
 
     def __init__(self):
-        self.tv_info = {}
-        self.prices_info = {}
+        self._tv_info = {}
 
     def get_product_ids(self):
         response_with_product_ids = requests.get(self.GET_PRODUCTS_IDS_URL, params=params, cookies=cookies,
@@ -43,10 +42,10 @@ class MvideoParser:
             tv_models_info = response_with_models_info.json()['body']['products']
             for tv in tv_models_info:
                 if product_id := tv.get('productId'):
-                    self.tv_info[product_id] = {}
+                    self._tv_info[product_id] = {}
                 if name := tv.get('name'):
-                    self.tv_info[product_id]['name'] = name
-            return self.tv_info
+                    self._tv_info[product_id]['name'] = name
+            return self._tv_info
         return None
 
     def add_prices_info_to_tv_info(self):
@@ -59,8 +58,8 @@ class MvideoParser:
                     base_price = tv_prices_info.get('basePrice')
                     sales_price = tv_prices_info.get('salePrice')
                     if tv_id:
-                        self.tv_info[tv_id]['base_price'], self.tv_info[tv_id]['sale_price'] = base_price, sales_price
-            return self.tv_info
+                        self._tv_info[tv_id]['base_price'], self._tv_info[tv_id]['sale_price'] = base_price, sales_price
+            return self._tv_info
         return None
 
 
