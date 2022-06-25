@@ -102,7 +102,7 @@ headers = {
 
 params = {
     'categoryId': '65',
-    'offset': '0',
+    'offset': 0,
     'limit': '24',
     'filterParams': [
         'WyJjYXRlZ29yeSIsIiIsIjE2ODIiXQ==',

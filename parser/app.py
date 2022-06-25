@@ -18,8 +18,15 @@ class MvideoParser:
     def get_product_ids(self):
         response_with_product_ids = requests.get(self.GET_PRODUCTS_IDS_URL, params=params, cookies=cookies,
                                               headers=headers)
+        products_ids = []
         if response_with_product_ids.status_code == 200:
-            products_ids = response_with_product_ids.json()['body']['products']
+            if total_product_number := response_with_product_ids.json()["body"].get('total'):
+                while params['offset'] <= total_product_number:
+                    products_ids.extend(response_with_product_ids.json()['body']['products'])
+                    params['offset'] += 24
+                    response_with_product_ids = requests.get(self.GET_PRODUCTS_IDS_URL, params=params, cookies=cookies,
+                                                             headers=headers)
+            params['offset'] = 0
             return products_ids
         return None
 
@@ -64,7 +71,7 @@ class MvideoParser:
 
 
 parser = MvideoParser()
-print(parser.get_product_ids())
+# print(parser.get_product_ids())
 print(parser.get_json_data_and_params_from_products_ids())
 print(parser.add_model_info_to_tv_info())
 print(parser.add_prices_info_to_tv_info())
