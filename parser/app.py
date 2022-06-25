@@ -28,14 +28,14 @@ class MvideoParser:
         if products_ids := self.get_product_ids():
             json_data = {'productIds': products_ids}
             params = {
-                'productIds': ', '.join(products_ids),
+                'productIds': ','.join(products_ids),
                 'addBonusRubles': 'true',
                 'isPromoApplied': 'true',
             }
             return json_data, params
         return None, None
 
-    def get_response_with_models_info(self):
+    def add_model_info_to_tv_info(self):
         json_data = self.get_json_data_and_params_from_products_ids()[0]
         response_with_models_info = requests.post(self.GET_MODELS_INFO_URL, cookies=cookies, headers=headers,
                                                              json=json_data)
@@ -49,15 +49,23 @@ class MvideoParser:
             return self.tv_info
         return None
 
-    def get_response_with_prices_info(self):
+    def add_prices_info_to_tv_info(self):
         params = self.get_json_data_and_params_from_products_ids()[1]
         response_with_prices_info = requests.get(self.GET_PRICES_URL, cookies=cookies, headers=headers, params=params)
         if response_with_prices_info.status_code == 200:
-            return response_with_prices_info.json()['body']['materialPrices']
+            for tv in response_with_prices_info.json()['body']['materialPrices']:
+                if tv_prices_info := tv.get('price'):
+                    tv_id = tv_prices_info.get('productId')
+                    base_price = tv_prices_info.get('basePrice')
+                    sales_price = tv_prices_info.get('salePrice')
+                    if tv_id:
+                        self.tv_info[tv_id]['base_price'], self.tv_info[tv_id]['sale_price'] = base_price, sales_price
+            return self.tv_info
         return None
+
 
 parser = MvideoParser()
 print(parser.get_product_ids())
 print(parser.get_json_data_and_params_from_products_ids())
-print(parser.get_response_with_models_info())
-print(parser.get_response_with_prices_info())
+print(parser.add_model_info_to_tv_info())
+print(parser.add_prices_info_to_tv_info())
