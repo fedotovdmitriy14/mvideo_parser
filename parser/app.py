@@ -54,6 +54,8 @@ class MvideoParser:
                     self._tv_info[product_id] = {}
                 if name := tv.get('name'):
                     self._tv_info[product_id]['name'] = name
+                if name_translit := tv.get('nameTranslit'):
+                    self._tv_info[product_id]['link'] = f'https://www.mvideo.ru/products/{name_translit}-{product_id}'
             return self._tv_info
         return None
 
