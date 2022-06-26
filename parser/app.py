@@ -1,6 +1,6 @@
 import requests
 
-from parser.url_params import params, cookies, headers
+from url_params import params, cookies, headers
 
 
 class MvideoParser:
