@@ -6,13 +6,10 @@ parser = MvideoParser()
 
 
 def run_all_methods():
-    print(parser.get_json_data_and_params_from_products_ids())
-    print(parser.add_model_name_and_link_to_tv_info())
-    print(parser.add_prices_to_tv_info())
+    print(parser.get_all_discounts_today())
 
 
 schedule.every(30).seconds.do(run_all_methods)
-
 
 if __name__ == '__main__':
     while True:
