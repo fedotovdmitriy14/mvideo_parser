@@ -43,7 +43,7 @@ class MvideoParser:
             return json_data, params
         return None, None
 
-    def add_model_info_to_tv_info(self):
+    def add_model_name_and_link_to_tv_info(self):
         json_data = self.get_json_data_and_params_from_products_ids()[0]
         response_with_models_info = requests.post(self.GET_MODELS_INFO_URL, cookies=cookies, headers=headers,
                                                              json=json_data)
@@ -59,7 +59,7 @@ class MvideoParser:
             return self._tv_info
         return None
 
-    def add_prices_info_to_tv_info(self):
+    def add_prices_to_tv_info(self):
         params = self.get_json_data_and_params_from_products_ids()[1]
         response_with_prices_info = requests.get(self.GET_PRICES_URL, cookies=cookies, headers=headers, params=params)
         if response_with_prices_info.status_code == 200:
@@ -79,8 +79,8 @@ parser = MvideoParser()
 
 def run_all_methods():
     print(parser.get_json_data_and_params_from_products_ids())
-    print(parser.add_model_info_to_tv_info())
-    print(parser.add_prices_info_to_tv_info())
+    print(parser.add_model_name_and_link_to_tv_info())
+    print(parser.add_prices_to_tv_info())
 
 
 schedule.every(30).seconds.do(run_all_methods)
