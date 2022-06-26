@@ -1,4 +1,5 @@
 import requests
+import schedule
 
 from url_params import params, cookies, headers
 
@@ -72,7 +73,17 @@ class MvideoParser:
 
 
 parser = MvideoParser()
-# print(parser.get_product_ids())
-print(parser.get_json_data_and_params_from_products_ids())
-print(parser.add_model_info_to_tv_info())
-print(parser.add_prices_info_to_tv_info())
+
+
+def run_all_methods():
+    print(parser.get_json_data_and_params_from_products_ids())
+    print(parser.add_model_info_to_tv_info())
+    print(parser.add_prices_info_to_tv_info())
+
+
+schedule.every(30).seconds.do(run_all_methods)
+
+
+if __name__ == '__main__':
+    while True:
+        schedule.run_pending()
