@@ -13,7 +13,7 @@ class MvideoParser:
     headers = headers
 
     def __init__(self):
-        self._tv_info = {}
+        self.tv_info = {}
 
     def get_product_ids(self):
         response_with_product_ids = requests.get(self.GET_PRODUCTS_IDS_URL, params=params, cookies=cookies,
@@ -50,12 +50,12 @@ class MvideoParser:
             tv_models_info = response_with_models_info.json()['body']['products']
             for tv in tv_models_info:
                 if product_id := tv.get('productId'):
-                    self._tv_info[product_id] = {}
+                    self.tv_info[product_id] = {}
                 if name := tv.get('name'):
-                    self._tv_info[product_id]['name'] = name
+                    self.tv_info[product_id]['name'] = name
                 if name_translit := tv.get('nameTranslit'):
-                    self._tv_info[product_id]['link'] = f'https://www.mvideo.ru/products/{name_translit}-{product_id}'
-            return self._tv_info
+                    self.tv_info[product_id]['link'] = f'https://www.mvideo.ru/products/{name_translit}-{product_id}'
+            return self.tv_info
         return None
 
     def add_prices_to_tv_info(self):
@@ -68,6 +68,16 @@ class MvideoParser:
                     base_price = tv_prices_info.get('basePrice')
                     sales_price = tv_prices_info.get('salePrice')
                     if tv_id:
-                        self._tv_info[tv_id]['base_price'], self._tv_info[tv_id]['sale_price'] = base_price, sales_price
-            return self._tv_info
+                        self.tv_info[tv_id]['base_price'], self.tv_info[tv_id]['sale_price'] = base_price, sales_price
+            return self.tv_info
         return None
+
+    def get_all_discounts_today(self):
+        self.add_model_name_and_link_to_tv_info()
+        self.add_prices_to_tv_info()
+        tv_on_sale_links = set()
+        for tv_id, tv_info in self.tv_info.items():
+            if sale_price := tv_info.get('sale_price'):
+                if tv_info['base_price'] > sale_price:
+                    tv_on_sale_links.add(tv_info['link'])
+        return tv_on_sale_links
