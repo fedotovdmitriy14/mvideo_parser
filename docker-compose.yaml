@@ -1,0 +1,6 @@
+services:
+
+  mvideo_parser:
+    build:
+      context: .
+    command: python parser/app.py
