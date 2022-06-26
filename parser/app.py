@@ -21,11 +21,12 @@ class MvideoParser:
         products_ids = []
         if response_with_product_ids.status_code == 200:
             if total_product_number := response_with_product_ids.json()["body"].get('total'):
+                products_ids.extend(response_with_product_ids.json()['body']['products'])
                 while params['offset'] <= total_product_number:
-                    products_ids.extend(response_with_product_ids.json()['body']['products'])
                     params['offset'] += 24
                     response_with_product_ids = requests.get(self.GET_PRODUCTS_IDS_URL, params=params, cookies=cookies,
                                                              headers=headers)
+                    products_ids.extend(response_with_product_ids.json()['body']['products'])
             params['offset'] = 0
             return products_ids
         return None
